@@ -8,14 +8,17 @@
 
 import UIKit
 import MapKit
+import CoreLocation
 
 class MapVC: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var travelModeSegment: UISegmentedControl!
-    let regionInMeters: Double = 10000
     
-    var locationManager = CLLocationManager()
+    let regionInMeters: Double = 10000
+    let locationManager = CLLocationManager()
+    var destination: CLLocationCoordinate2D!
+    var travelMode: String = "Drive"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +26,7 @@ class MapVC: UIViewController {
         // Do any additional setup after loading the view.
         
         checkLocationServices()
+        addDoubleTap()
 
     }
     
@@ -31,6 +35,9 @@ class MapVC: UIViewController {
         if CLLocationManager.locationServicesEnabled(){
             setupLocationManager()
             checkLocationAuthorization()
+        }
+        else {
+            // Show alert letting the user know they have to turn this on.
         }
     }
     
@@ -42,7 +49,6 @@ class MapVC: UIViewController {
     func checkLocationAuthorization() {
         switch CLLocationManager.authorizationStatus() {
         case .authorizedWhenInUse:
-            //startTrackingUserLocation()
             centerViewOnUserLocation()
             locationManager.startUpdatingLocation()
             break
@@ -62,13 +68,23 @@ class MapVC: UIViewController {
     }
     
      func centerViewOnUserLocation() {
-            if let location = locationManager.location?.coordinate {
-                let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
-                mapView.setRegion(region, animated: true)
-            }
-        }
+             if let location = locationManager.location?.coordinate {
+                 let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
+                 mapView.setRegion(region, animated: true)
+             }
+         }
+    
     
     @IBAction func travelModeSegment(_ sender: UISegmentedControl) {
+       let overlays = mapView.overlays
+        mapView.removeOverlays(overlays)
+        
+        if sender.selectedSegmentIndex == 0 {
+            travelMode = "D"
+        }
+        else{
+            travelMode = "W"
+        }
     }
     
     @IBAction func zoomInBtnClick(_ sender: UIButton) {
@@ -84,6 +100,40 @@ class MapVC: UIViewController {
     }
     
     @IBAction func drawLocationBtnClick(_ sender: UIButton) {
+        
+        let overlays = mapView.overlays
+        mapView.removeOverlays(overlays)
+        //draw route
+        let sourcePlacemark = MKPlacemark(coordinate: locationManager.location!.coordinate)
+        let destinationPlacemark = MKPlacemark(coordinate: destination)
+        
+        let directionRequest = MKDirections.Request()
+        directionRequest.source = MKMapItem(placemark: sourcePlacemark)
+        directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
+        
+        directionRequest.requestsAlternateRoutes = true
+        
+        if(travelMode == "D") {
+            directionRequest.transportType = .automobile
+        }
+        else {
+            directionRequest.transportType = .walking
+        }
+        
+        let directions = MKDirections(request: directionRequest)
+        directions.calculate { (response, error) in
+            guard let unwrappedResponse = response else { return }
+            let route = unwrappedResponse.routes[0]
+            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
+            self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
+                
+                let distance = route.distance
+                
+                let alert = UIAlertController(title: "Let's go", message: "Distnace : \(distance) KM", preferredStyle: .alert)
+                       let cancelAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                       alert.addAction(cancelAction)
+                self.present(alert, animated: true, completion: nil)
+        }
     }
 }
 
@@ -102,8 +152,74 @@ extension MapVC: CLLocationManagerDelegate {
         checkLocationAuthorization()
     }
     
+    func addDoubleTap() {
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(dropPin))
+        doubleTap.numberOfTapsRequired = 2
+        mapView.addGestureRecognizer(doubleTap)
+    }
+    
+    @objc func dropPin(sender: UITapGestureRecognizer) {
+        
+        removePin()
+        // add annotation
+        let touchPoint = sender.location(in: mapView)
+        let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+        let annotation = MKPointAnnotation()
+        annotation.title = "My destination"
+        annotation.coordinate = coordinate
+        mapView.addAnnotation(annotation)
+        
+        destination = coordinate
+    }
+    
+    func removePin() {
+        for annotation in mapView.annotations {
+            mapView.removeAnnotation(annotation)
+        }
+    }
+    
 }
 
 extension MapVC: MKMapViewDelegate {
     
+    //MARK: - add viewFor annotation method
+       func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+           
+           if annotation is MKUserLocation {
+               return nil
+           }
+           // add custom annotation with image
+               let pinAnnotation = mapView.dequeueReusableAnnotationView(withIdentifier: "droppablePin") ?? MKPinAnnotationView()
+               pinAnnotation.image = UIImage(systemName: "mappin")
+               pinAnnotation.canShowCallout = true
+               pinAnnotation.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+               return pinAnnotation
+           }
+    //MARK: - callout accessory control tapped
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        let alertController = UIAlertController(title: "Your Place", message: "Welcome", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    //MARK: - Render for overlay
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if overlay is MKPolyline {
+            let rendrer = MKPolylineRenderer(overlay: overlay)
+            if travelModeSegment.selectedSegmentIndex == 0
+            {
+                rendrer.strokeColor = UIColor.red
+            }
+            else
+            {
+                rendrer.strokeColor = UIColor.blue
+                rendrer.lineDashPattern = [0,4]
+            }
+            rendrer.lineWidth = 3
+            return rendrer
+            
+        }
+        return MKOverlayRenderer()
+    }
 }
