@@ -20,14 +20,14 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="favPlaceCell" id="hTl-T3-BQC" customClass="FavPlacesTableViewCell" customModule="toVisitPlaces_Avani_C0772788" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="28" width="414" height="43"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hTl-T3-BQC" id="FIw-Bl-nu3">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wty-VC-yLK">
-                                                    <rect key="frame" x="20" y="11" width="374" height="21.5"/>
+                                                    <rect key="frame" x="20" y="11" width="374" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -71,10 +71,10 @@
             </objects>
             <point key="canvasLocation" x="1047.8260869565217" y="116.51785714285714"/>
         </scene>
-        <!--View Controller-->
+        <!--MapVC-->
         <scene sceneID="Pls-hP-Ney">
             <objects>
-                <viewController id="25e-Y3-HQe" sceneMemberID="viewController">
+                <viewController id="25e-Y3-HQe" customClass="MapVC" customModule="toVisitPlaces_Avani_C0772788" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="muY-KM-RD3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -89,6 +89,9 @@
                                     <segment title="Driving"/>
                                     <segment title="Walking"/>
                                 </segments>
+                                <connections>
+                                    <action selector="travelModeSegment:" destination="25e-Y3-HQe" eventType="valueChanged" id="seU-ws-S76"/>
+                                </connections>
                             </segmentedControl>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="WhQ-dS-DRR">
                                 <rect key="frame" x="329.5" y="772" width="19.5" height="60"/>
@@ -97,11 +100,17 @@
                                         <rect key="frame" x="0.0" y="0.0" width="19.5" height="22"/>
                                         <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" image="plus.square" catalog="system"/>
+                                        <connections>
+                                            <action selector="zoomInBtnClick:" destination="25e-Y3-HQe" eventType="touchUpInside" id="3QE-9y-dpY"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ebt-9E-TfQ">
                                         <rect key="frame" x="0.0" y="39" width="19.5" height="19.5"/>
                                         <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" backgroundImage="minus.square" catalog="system"/>
+                                        <connections>
+                                            <action selector="zoomOutBtnClick:" destination="25e-Y3-HQe" eventType="touchUpInside" id="kti-YB-1MR"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -113,6 +122,9 @@
                                 </constraints>
                                 <color key="tintColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" backgroundImage="location.circle" catalog="system"/>
+                                <connections>
+                                    <action selector="drawLocationBtnClick:" destination="25e-Y3-HQe" eventType="touchUpInside" id="OzK-1m-h28"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -131,6 +143,10 @@
                         <viewLayoutGuide key="safeArea" id="sYC-Aw-h7O"/>
                     </view>
                     <navigationItem key="navigationItem" id="PZg-jO-Ckk"/>
+                    <connections>
+                        <outlet property="mapView" destination="kfa-HY-kNV" id="Bo1-3l-7ty"/>
+                        <outlet property="travelModeSegment" destination="VB2-Yi-S6b" id="OPg-X2-Lfn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0Ry-o5-efr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
