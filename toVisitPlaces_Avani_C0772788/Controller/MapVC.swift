@@ -13,6 +13,7 @@ class MapVC: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var travelModeSegment: UISegmentedControl!
+    let regionInMeters: Double = 10000
     
     var locationManager = CLLocationManager()
     
@@ -42,6 +43,8 @@ class MapVC: UIViewController {
         switch CLLocationManager.authorizationStatus() {
         case .authorizedWhenInUse:
             //startTrackingUserLocation()
+            centerViewOnUserLocation()
+            locationManager.startUpdatingLocation()
             break
         case .denied:
             //Show alert instructing them how to turn on permissions
@@ -58,13 +61,26 @@ class MapVC: UIViewController {
         }
     }
     
+     func centerViewOnUserLocation() {
+            if let location = locationManager.location?.coordinate {
+                let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
+                mapView.setRegion(region, animated: true)
+            }
+        }
+    
     @IBAction func travelModeSegment(_ sender: UISegmentedControl) {
     }
     
     @IBAction func zoomInBtnClick(_ sender: UIButton) {
+        let span = MKCoordinateSpan(latitudeDelta: mapView.region.span.latitudeDelta/2, longitudeDelta: mapView.region.span.longitudeDelta/2)
+        let region = MKCoordinateRegion(center: mapView.region.center, span: span)
+        mapView.setRegion(region, animated: true)
     }
     
     @IBAction func zoomOutBtnClick(_ sender: UIButton) {
+        let span = MKCoordinateSpan(latitudeDelta: mapView.region.span.latitudeDelta*2, longitudeDelta: mapView.region.span.longitudeDelta*2)
+        let region = MKCoordinateRegion(center: mapView.region.center, span: span)
+        mapView.setRegion(region, animated: true)
     }
     
     @IBAction func drawLocationBtnClick(_ sender: UIButton) {
@@ -72,6 +88,19 @@ class MapVC: UIViewController {
 }
 
 extension MapVC: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+         guard let location = locations.last else { return }
+
+               let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+
+               let region = MKCoordinateRegion.init(center: center, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
+
+               mapView.setRegion(region, animated: true)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        checkLocationAuthorization()
+    }
     
 }
 
