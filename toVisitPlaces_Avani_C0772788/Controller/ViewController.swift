@@ -10,24 +10,67 @@ import UIKit
 
 class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
     
-    @IBOutlet weak var tblFavPlaces: UITableView!
+    let userDefault = UserDefaults.standard
     
+    @IBOutlet weak var tblFavPlaces: UITableView!
+    var favoritePlaces: [FavoritePlace]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
         tblFavPlaces.dataSource = self
         tblFavPlaces.delegate = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadData()
+        self.tblFavPlaces.reloadData()
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return favoritePlaces?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let favPlace = favoritePlaces![indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "favPlaceCell") as! FavPlacesTableViewCell
+        cell.textLabel?.text = favPlace.address
+        cell.detailTextLabel?.text = "Lat: \(favPlace.latitude) Lang: \(favPlace.longitude)"
+        
         return cell
+    }
+    
+    func getDataFilePath() -> String {
+        let documentPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let filePath = documentPath.appending("/Favorite_Places.txt")
+        return filePath
+    }
+    
+    func loadData() {
+        favoritePlaces = [FavoritePlace]()
+        let filepath = getDataFilePath()
+        
+        if FileManager.default.fileExists(atPath: filepath) {
+            do {
+                let fileContent = try String(contentsOfFile: filepath)
+                let contentArray = fileContent.components(separatedBy: "\n")
+                for content in contentArray {
+                    let favPlaceContent = content.components(separatedBy: ",")
+                    if favPlaceContent.count == 3 {
+                        let favPlace = FavoritePlace(latitude: Double(favPlaceContent[0]) ?? 0.0, longitude: Double(favPlaceContent[1]) ?? 0.0, address: favPlaceContent[2] )
+                        favoritePlaces?.append(favPlace)
+                    }
+                }
+                print(self.favoritePlaces?.count ?? 0)
+            }
+            catch {
+                print(error)
+            }
+        }
     }
     
 }

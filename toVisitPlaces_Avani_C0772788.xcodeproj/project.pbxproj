@@ -15,7 +15,7 @@
 		475FC69524970A4C001221D2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 475FC69324970A4C001221D2 /* LaunchScreen.storyboard */; };
 		47A597052498121800EFC2AC /* FavPlacesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A597042498121800EFC2AC /* FavPlacesTableViewCell.swift */; };
 		47A597072498182200EFC2AC /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A597062498182200EFC2AC /* MapVC.swift */; };
-		47A5970C24981BE300EFC2AC /* Favorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A5970B24981BE300EFC2AC /* Favorite.swift */; };
+		47A5970C24981BE300EFC2AC /* FavoritePlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A5970B24981BE300EFC2AC /* FavoritePlace.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 		475FC69624970A4C001221D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		47A597042498121800EFC2AC /* FavPlacesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavPlacesTableViewCell.swift; sourceTree = "<group>"; };
 		47A597062498182200EFC2AC /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
-		47A5970B24981BE300EFC2AC /* Favorite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorite.swift; sourceTree = "<group>"; };
+		47A5970B24981BE300EFC2AC /* FavoritePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePlace.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +78,7 @@
 		47A5970824981B0C00EFC2AC /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				47A5970B24981BE300EFC2AC /* Favorite.swift */,
+				47A5970B24981BE300EFC2AC /* FavoritePlace.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -174,7 +174,7 @@
 				47A597072498182200EFC2AC /* MapVC.swift in Sources */,
 				475FC68D24970A48001221D2 /* ViewController.swift in Sources */,
 				475FC68924970A48001221D2 /* AppDelegate.swift in Sources */,
-				47A5970C24981BE300EFC2AC /* Favorite.swift in Sources */,
+				47A5970C24981BE300EFC2AC /* FavoritePlace.swift in Sources */,
 				475FC68B24970A48001221D2 /* SceneDelegate.swift in Sources */,
 				47A597052498121800EFC2AC /* FavPlacesTableViewCell.swift in Sources */,
 			);
