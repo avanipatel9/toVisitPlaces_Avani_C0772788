@@ -14,6 +14,7 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
     
     @IBOutlet weak var tblFavPlaces: UITableView!
     var favoritePlaces: [FavoritePlace]?
+    var deleteArray: [FavoritePlace]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +45,18 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
         return cell
     }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            self.favoritePlaces?.remove(at: indexPath.row)
+            self.tblFavPlaces.deleteRows(at: [indexPath], with: .automatic)
+            self.deleteArray = self.favoritePlaces
+            deleteRow()
+        }
+//        else if editingStyle == .insert {
+//
+//        }
+    }
+    
     func getDataFilePath() -> String {
         let documentPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         let filePath = documentPath.appending("/Favorite_Places.txt")
@@ -68,6 +81,23 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
                 print(self.favoritePlaces?.count ?? 0)
             }
             catch {
+                print(error)
+            }
+        }
+    }
+    
+    func deleteRow() {
+        
+        
+        let filePath = getDataFilePath()
+        
+        var saveString = ""
+        for arrayItem in self.deleteArray! {
+            saveString = "\(saveString)\(arrayItem.latitude),\(arrayItem.longitude),\(arrayItem.address)\n"
+            do {
+                userDefault.removeObject(forKey: "favPlace")
+                try saveString.write(toFile: filePath, atomically: true, encoding: .utf8)
+            } catch {
                 print(error)
             }
         }

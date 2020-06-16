@@ -15,6 +15,7 @@ class MapVC: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var travelModeSegment: UISegmentedControl!
     
+    let userDefault = UserDefaults.standard
     let regionInMeters: Double = 10000
     let locationManager = CLLocationManager()
     var destination: CLLocationCoordinate2D!
@@ -72,10 +73,11 @@ class MapVC: UIViewController {
         
         var saveString = ""
         for favPlace in favoritePlaces! {
-            saveString = "\(saveString)\(favPlace.latitude),\(favPlace.longitude),\(favPlace.address)"
+            saveString = "\(saveString)\(favPlace.latitude),\(favPlace.longitude),\(favPlace.address)\n"
         }
         do {
             try saveString.write(toFile: filePath, atomically: true, encoding: .utf8)
+            userDefault.setValue(saveString, forKey: "favPlace")
                } catch {
                    print(error)
                }
